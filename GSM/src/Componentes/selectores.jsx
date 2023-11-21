@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { getRegRequest } from '../../Api/entes.api';
 import './tabla.css';
+import AutenticacionNormal from './Aut1';
+
+
 
 const SelectorConsulta = () => {
   const [selectedOption, setSelectedOption] = useState('38903');
   const [distance, setDistance] = useState('');
   const [reg, setReg] = useState(null);
   const [Rx, setRx] = useState(0);
+  const [aut1, setAut1] = useState(false)
 
   const handleSelectorChange = async (e) => {
     const newSelectedOption = e.target.value;
@@ -26,17 +30,20 @@ const SelectorConsulta = () => {
 
   const handleDistanceSubmit = async () => {
     console.log('Distancia enviada:', distance);
-    let l0 = 32.4 + (20 * Math.log10(893.5)) + (20 * Math.log10(distance / 1000));
-    let prx = (((15 * 1.68) / Math.pow(distance, 2)) ** 2) * ((3.9 * 15) / l0) * 0.01;
+    let l0 = 32.4 + 20 * Math.log10(893.5) + 20 * Math.log10(distance / 1000);
+    let prx = Math.pow(15 * 1.68 / Math.pow(distance, 2), 2) * (3.9 * 15 / l0) * 0.01;
     let prxdb = 10 * Math.log10(prx / 0.001);
     setRx(prxdb);
+
     if (prxdb < -90) {
-        // Mostrar alerta
-        alert('La potencia de recepción es menor a -90 dBm. No hay potencia suficiente para el servicio.');
-        
-        // Actualizar la página (puedes cambiar la lógica según tus necesidades)
-        window.location.reload();
-      }
+      // Mostrar alerta
+      alert('La potencia de recepción es menor a -90 dBm. No hay potencia suficiente para el servicio.');
+
+      // Actualizar la página (puedes cambiar la lógica según tus necesidades)
+      window.location.reload();
+    }
+    else 
+      setAut1(true);
   };
 
   const isDistanceValid = () => {
@@ -55,7 +62,7 @@ const SelectorConsulta = () => {
       </select>
 
       {reg && (
-        <div>
+        <div className='container'>
           <h2>Datos de la Radiobase</h2>
           <table>
             <thead>
@@ -74,14 +81,14 @@ const SelectorConsulta = () => {
             </tbody>
           </table>
 
-          <div>
+          <div className='distance-form-container'>
             <h2>Ingrese la distancia</h2>
             <input type="number" value={distance} onChange={handleDistanceChange} />
-            <button className='btn1' onClick={handleDistanceSubmit}>Enviar Distancia</button>
-
-            <p style={{ color: 'red' }}>
-              {Rx}
-            </p>
+            <button className="btn1" onClick={handleDistanceSubmit}>
+              Enviar Distancia
+            </button>
+            <p>La potencia recibida es: {Rx} dB</p>
+            {aut1 && <AutenticacionNormal/>}
           </div>
         </div>
       )}

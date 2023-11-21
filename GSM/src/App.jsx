@@ -1,35 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import React, { useState, useEffect } from 'react';
+import { getTasksRequest} from '../Api/entes.api';
+import DataTable from './Componentes/tabla';
+import SelectorConsulta from './Componentes/selectores';
+// import { Routes, Route } from 'react-router-dom';
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [ente, setEnte] = useState(null);
+  const [mostrarTabla, setMostarTabla]=useState(false);
 
+  useEffect(()=>{
+    async function cargarEnte(){
+      const response = await getTasksRequest();
+      setEnte(response.data);
+    }
+    cargarEnte();
+  },[]);
+
+  const handleSubmit= ()=>{
+    setMostarTabla(!mostrarTabla);
+  };
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <div>
+      <h1>Proceso de Autenticación GSM</h1>
+      <button onClick={handleSubmit} >Iniciar Autenticación</button>
+      {mostrarTabla && <DataTable data={ente} />}
+      {mostrarTabla && <SelectorConsulta />}
+    </div>
     </>
-  )
-}
 
-export default App
+  );
+};
+
+export default App;

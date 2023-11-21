@@ -2,6 +2,11 @@ import { Router } from 'express';
 import {
     obtenerEnte,
     obtenerEntes,
+    obtenerAuC,
+    obtenerEir,
+    obtenerHlr,
+    obtenerRegBSS,
+    obtenerVlr,
     crearEntes,
     actualizarEntes,
     eliminarEntes,
@@ -10,6 +15,11 @@ import {
 const router = Router();
 
 router.get('/entes',obtenerEntes);
+router.get('/hlr',obtenerHlr);
+router.get('/vlr',obtenerVlr);
+router.get('/auc',obtenerAuC);
+router.get('/regbss/:id',obtenerRegBSS);
+router.get('/eir',obtenerEir);
 
 router.get('/entes/:id',obtenerEnte);
 

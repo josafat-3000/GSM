@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import './AutenticacionNormal.css'; // Importa tu archivo de estilos
+import TableComponent from './usuarioAutenticado';
 
-const AutenticacionNormal = () => {
+const AutenticacionNormal = (hand_Of) => {
     const [id, setId] = useState('');
     const [data, setData] = useState(null);
     const [send, setSend] = useState(null)
-    const [aut, setAut] = useState(false);
+    const [aut, setAut] = useState("");
+    const [autTar, setAutTar] = useState(false);
+    const [handOf, setHandOf] = useState(null);
     const fetchData = async (id) => {
         try {
           const response = await fetch(`http://localhost:3000/entes/${id}`);
@@ -14,7 +17,6 @@ const AutenticacionNormal = () => {
   
           // Aquí puedes manejar los datos recibidos
           setData(jsonData[0]);
-          console.log(jsonData);
         } catch (error) {
           // Aquí puedes manejar errores en la solicitud
           setError(error);
@@ -34,15 +36,25 @@ const AutenticacionNormal = () => {
       setId(values.ICCID)
       setSend(values)
       fetchData(id);
-      console.log(send.TARIFA)
-      console.log(data.TARIFA);
+      setHandOf({...values,...hand_Of,})
+      console.log(handOf)
+      
       
       if(data.REG_Y_ZONA === send.REG_Y_ZONA && data.EQUIPO === send.EQUIPO && 
         data.ICCID === send.ICCID && data.IMSI_USER === send.IMSI_USER && 
-        data.TARIFA == send.TARIFA){
+        data.TARIFA == send.TARIFA && data.TARIFA != 0){
         console.log('NASA hackeada')
         setAut(true)
+
         }
+        else{
+          setAut(false);
+          if(data.TARIFA == 0){
+          setAutTar(!autTar)
+        alert('Sin saldo suficiente');
+        window.location.reload();}
+        }
+          
     },
     validate: (values) => {
       const errors = {};
@@ -71,6 +83,7 @@ const AutenticacionNormal = () => {
   });
 
   return (
+    <>
     <form onSubmit={formik.handleSubmit} className="my-form">
       <div className="form-group">
         <label htmlFor="REG_Y_ZONA">Zona de Registro:</label>
@@ -171,9 +184,17 @@ const AutenticacionNormal = () => {
       <button type="submit" className="btn btn-primary">
         Enviar
       </button>
-      {aut?<h2>Usuario Autenticado correctamente</h2>:
-      <h2>Autenticacción Fallida</h2>}
-    </form>
+      </form>
+      
+      <div style={{width: '100%'}}>
+      {aut?(
+      <TableComponent data={handOf}/>
+      ):
+        <h2>Autenticacción Fallida</h2>
+      }
+      </div>
+      </>
+    
   );
 };
 

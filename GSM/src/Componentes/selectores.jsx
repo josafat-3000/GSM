@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { getRegRequest } from '../../Api/entes.api';
 import './tabla.css';
 import AutenticacionNormal from './Aut1';
+import AutenticacionVisita from './Aut2';
 
 
 
@@ -11,7 +12,20 @@ const SelectorConsulta = () => {
   const [reg, setReg] = useState(null);
   const [Rx, setRx] = useState(0);
   const [aut1, setAut1] = useState(false)
+  const [mostrarAutenticacionHLR, setMostrarAutenticacionHLR] = useState(false);
+  const [mostrarAutenticacionVLR, setMostrarAutenticacionVLR] = useState(false);
 
+  const handleMostrarAutenticacion = (tipo) => {
+    // Lógica para mostrar el componente correspondiente
+    if (tipo === 'HLR') {
+      setMostrarAutenticacionHLR(true);
+      setMostrarAutenticacionVLR(false);
+    } else if (tipo === 'VLR') {
+      setMostrarAutenticacionVLR(true);
+      setMostrarAutenticacionHLR(false);
+    }
+  };
+  
   const handleSelectorChange = async (e) => {
     const newSelectedOption = e.target.value;
     setSelectedOption(newSelectedOption);
@@ -88,7 +102,23 @@ const SelectorConsulta = () => {
               Enviar Distancia
             </button>
             <p>La potencia recibida es: {Rx} dB</p>
-            {aut1 && <AutenticacionNormal/>}
+            <div>
+      <button onClick={() => handleMostrarAutenticacion('HLR')}>Autenticación HLR</button>
+      <button onClick={() => handleMostrarAutenticacion('VLR')}>Autenticación VLR</button>
+
+      {mostrarAutenticacionHLR && (
+        <div className='distance-form-container'>
+          {aut1 && <AutenticacionNormal hand_Of={reg.CELL_ID}/>}
+        </div>
+      )}
+
+      {mostrarAutenticacionVLR && (
+        <div className='distance-form-container'>
+          {aut1 && <AutenticacionVisita hand_Of={reg.CELL_ID}/>}
+        </div>
+      )}
+    </div>
+            
           </div>
         </div>
       )}

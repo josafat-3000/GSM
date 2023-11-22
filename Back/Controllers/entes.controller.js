@@ -53,17 +53,27 @@ export const obtenerEir = async (req,res)=>{
         return res.status(500).json({mensaje: error.message});
     }
 };
-
-export const obtenerVlr = async (req,res)=>{
+export const obtenerEirId = async (req,res)=>{
     try{
     console.log(req.params);
-    const [result] = await pool.query('SELECT * FROM  VLR ');
+    const [result] = await pool.query('SELECT * FROM  EIR where IMSI_EIR = ?', [req.params.id,]);
     res.json(result);
     console.log(result);}
     catch (error){
         return res.status(500).json({mensaje: error.message});
     }
 };
+
+export const obtenerVlr = async (req,res)=>{
+    try{
+        console.log(req.params);
+        const [result] = await pool.query('SELECT * FROM  VLR ');
+        res.json(result);
+        console.log(result);}
+        catch (error){
+            return res.status(500).json({mensaje: error.message});
+        }
+    };
 
 export const obtenerAuC = async (req,res)=>{
     try{
@@ -75,10 +85,45 @@ export const obtenerAuC = async (req,res)=>{
         return res.status(500).json({mensaje: error.message});
     }
 };
-
-export const crearEntes = (req,res)=>{
-
+export const obtenerAuCId = async (req,res)=>{
+    try{
+    console.log(req.params);
+    const [result] = await pool.query('SELECT * FROM  AUC where IMSI_AUC = ?', [req.params.id,]);
+    res.json(result);
+    console.log(result);}
+    catch (error){
+        return res.status(500).json({mensaje: error.message});
+    }
 };
+
+export const crearVlr = async (req,res)=>{
+    try {
+        const { IMSI_VLR,
+        ID_MSC_NATIVO,
+        CELL_NATIVO,
+        TARIFICACION,
+        MNC_VISITA } = req.body;
+        const [result] = await pool.query(
+          "INSERT INTO VLR (IMSI_VLR, ID_MSC_NATIVO, CELL_NATIVO, TARIFICACION, MNC_VISITA)  VALUES (?, ?, ?, ?, ?)",
+          [IMSI_VLR,
+            ID_MSC_NATIVO,
+            CELL_NATIVO,
+            TARIFICACION,
+            MNC_VISITA]
+        );
+        res.json({
+          id: result.insertId,
+          IMSI_VLR,
+            ID_MSC_NATIVO,
+            CELL_NATIVO,
+            TARIFICACION,
+            MNC_VISITA
+        });
+      } catch (error) {
+        return res.status(500).json({ message: error.message });
+      }
+};
+
 export const actualizarEntes = (req,res)=>{
 
 };

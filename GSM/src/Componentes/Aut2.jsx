@@ -4,89 +4,89 @@ import './AutenticacionNormal.css'; // Importa tu archivo de estilos
 import TableComponent from './usuarioAutenticado';
 
 const AutenticacionVisita = () => {
-  const [id, setId] = useState('');
-  const [data, setData] = useState(null);
-  const [send, setSend] = useState(null);
-  const [aut, setAut] = useState(false);
-  const [autTar, setAutTar] = useState(false);
+  const [aut, setAut] = useState("");
   const [handOf, setHandOf] = useState(null);
-
-  const fetchData = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:3000/entes/${id}`);
-      const jsonData = await response.json();
-
-      // Aquí puedes manejar los datos recibidos
-      setData(jsonData[0]);
-    } catch (error) {
-      // Aquí puedes manejar errores en la solicitud
-      setError(error);
-    }
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
-      IMSI_VLR: '', // datos de servicio del invitado
-      ID_MSC_NATIVO: '', // Datos de su msc
-      CELL_NATIVO: '', // ID de Celula de registro
-      TARIFICACION: '', // CDMA 01 Renta, 10 Prepago, 11 paquete, 00 sin saldo
-      MNC_VISITA: '', // datos de su proveedor
+      IMSI_VLR: '',
+      ID_MSC_NATIVO: '',
+      CELL_NATIVO: '',
+      TARIFICACION: '',
+      MNC_VISITA: '',
     },
     onSubmit: (values) => {
-      // Puedes realizar alguna acción con los valores del formulario aquí
-      setId(values.ICCID);
-      setSend(values);
-      fetchData(id);
-      setHandOf({ ...values, ...handOf });
-
-      if (
-        data.REG_Y_ZONA === send.REG_Y_ZONA &&
-        data.EQUIPO === send.EQUIPO &&
-        data.ICCID === send.ICCID &&
-        data.IMSI_USER === send.IMSI_USER &&
-        data.TARIFA == send.TARIFA &&
-        data.TARIFA != 0
-      ) {
-        console.log('NASA hackeada');
-        setAut(true);
+      console.log(values);
+      if (values.TARIFICACION === '0') {
+        alert('Sin saldo suficiente');
+        window.location.reload();
       } else {
-        setAut(false);
-        if (data.TARIFA == 0) {
-          setAutTar(!autTar);
-          alert('Sin saldo suficiente');
-          window.location.reload();
-        }
+        setHandOf(values)
+        insertDataToDatabase(values);
       }
     },
     validate: (values) => {
       const errors = {};
-      if (!values.REG_Y_ZONA) {
-        errors.REG_Y_ZONA = 'La zona de registro es requerida';
+      if (!values.IMSI_VLR) {
+        errors.IMSI_VLR = 'IMSI_VLR es requerido';
       }
-      if (!values.EQUIPO) {
-        errors.EQUIPO = 'El equipo es requerido';
+      if (!values.ID_MSC_NATIVO) {
+        errors.ID_MSC_NATIVO = 'ID_MSC_NATIVO es requerido';
       }
-      if (!values.ICCID) {
-        errors.ICCID = 'El ICCID es requerido';
+      if (!values.CELL_NATIVO) {
+        errors.CELL_NATIVO = 'CELL_NATIVO es requerido';
       }
-      if (!values.IMSI_USER) {
-        errors.IMSI_USER = 'El IMSI_USER es requerido';
+      if (!values.TARIFICACION) {
+        errors.TARIFICACION = 'TARIFICACION es requerida';
       }
-      if (!values.TARIFA) {
-        errors.TARIFA = 'La tarifa es requerida';
+      if (!values.MNC_VISITA) {
+        errors.MNC_VISITA = 'MNC_VISITA es requerido';
       }
-      if (!values.CELL_ID) {
-        errors.CELL_ID = 'CELL_ID es requerido';
-      }
-      // Puedes agregar más validaciones según tus necesidades
 
       return errors;
     },
   });
 
+  const insertDataToDatabase = async (values) => {
+    try {
+      setIsLoading(true);
+
+      const response = await fetch('http://localhost:3000/vlr', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          IMSI_VLR: values.IMSI_VLR,
+          ID_MSC_NATIVO: values.ID_MSC_NATIVO,
+          CELL_NATIVO: values.CELL_NATIVO,
+          TARIFICACION: values.TARIFICACION,
+          MNC_VISITA: values.MNC_VISITA,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('Inserción exitosa');
+        setAut("Éxito");
+        setHandOf(result.data); // Asegúrate de que result.data sea la estructura correcta
+      } else {
+        console.error('Error al insertar en la base de datos');
+        setAut("Fallido");
+      }
+    } catch (error) {
+      console.error('Error en la solicitud de inserción', error);
+      setAut("Fallido");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <>
-      <form onSubmit={formik.handleSubmit} className="my-form">
+       <form onSubmit={formik.handleSubmit} className="my-form">
         {/* ... Campos del formulario ... */}
         <div className="form-group">
           <label htmlFor="IMSI_VLR">IMSI_VLR:</label>
@@ -167,18 +167,17 @@ const AutenticacionVisita = () => {
     <div className="invalid-feedback">{formik.errors.MNC_VISITA}</div>
   ) : null}
 </div>
-
-        <button type="submit" className="btn btn-primary">
+        <button style={{marginBottom: '20px'}} type="submit" className="btn btn-primary">
           Enviar
         </button>
       </form>
 
       <div style={{ width: '100%' }}>
-        {aut ? (
-          <TableComponent data={handOf} />
-        ) : (
-            <h2>Autenticacción Fallida</h2>
-        )}
+      {aut?(
+      <TableComponent data={handOf}/>
+      ):
+        <h2>Autenticacción Fallida</h2>
+      }
       </div>
     </>
   );

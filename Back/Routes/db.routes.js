@@ -7,8 +7,9 @@ import {
     obtenerHlr,
     obtenerRegBSS,
     obtenerVlr,
-    crearEntes,
-    actualizarEntes,
+    crearVlr,
+    obtenerAuCId,
+    obtenerEirId,
     eliminarEntes,
 } from '../Controllers/entes.controller.js';
 
@@ -20,12 +21,13 @@ router.get('/vlr',obtenerVlr);
 router.get('/auc',obtenerAuC);
 router.get('/regbss/:id',obtenerRegBSS);
 router.get('/eir',obtenerEir);
+router.get('/eir/:id',obtenerEirId);
+router.get('/auc/:id',obtenerAuCId);
 
 router.get('/entes/:id',obtenerEnte);
 
-router.post('/entes',crearEntes);
 
-router.put('/entes/:id',actualizarEntes);
+router.post('/vlr',crearVlr);
 
 router.delete('/entes/id',eliminarEntes);
 

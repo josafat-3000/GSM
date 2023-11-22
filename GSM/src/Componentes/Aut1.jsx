@@ -50,7 +50,7 @@ const AutenticacionNormal = (hand_Of) => {
         else{
           setAut(false);
           if(data.TARIFA == 0){
-          setAutTar(!autTar)
+          setAutTar(false)
         alert('Sin saldo suficiente');
         window.location.reload();}
         }
@@ -181,7 +181,7 @@ const AutenticacionNormal = (hand_Of) => {
         ) : null}
       </div>
 
-      <button type="submit" className="btn btn-primary">
+      <button style={{marginBottom: '20px'}} type="submit" className="btn btn-primary">
         Enviar
       </button>
       </form>

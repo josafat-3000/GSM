@@ -2,7 +2,7 @@ import express from 'express';
 import indexRoutes from './Routes/index.routes.js';
 import entesRoutes from './Routes/db.routes.js';
 import morgan from 'morgan';
-import cors from 'cors';
+
 
 const app = express();
 

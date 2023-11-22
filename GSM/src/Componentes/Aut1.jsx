@@ -1,8 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import './AutenticacionNormal.css'; // Importa tu archivo de estilos
 
 const AutenticacionNormal = () => {
+    const [id, setId] = useState('');
+    const [data, setData] = useState(null);
+    const [send, setSend] = useState(null)
+    const [aut, setAut] = useState(false);
+    const fetchData = async (id) => {
+        try {
+          const response = await fetch(`http://localhost:3000/entes/${id}`);
+          const jsonData = await response.json();
+  
+          // Aquí puedes manejar los datos recibidos
+          setData(jsonData[0]);
+          console.log(jsonData);
+        } catch (error) {
+          // Aquí puedes manejar errores en la solicitud
+          setError(error);
+        }
+      };
     const formik = useFormik({
         initialValues: {
           REG_Y_ZONA: '',
@@ -14,7 +31,18 @@ const AutenticacionNormal = () => {
         },
     onSubmit: (values) => {
       // Puedes realizar alguna acción con los valores del formulario aquí
-      console.log('Valores del formulario:', values);
+      setId(values.ICCID)
+      setSend(values)
+      fetchData(id);
+      console.log(send.TARIFA)
+      console.log(data.TARIFA);
+      
+      if(data.REG_Y_ZONA === send.REG_Y_ZONA && data.EQUIPO === send.EQUIPO && 
+        data.ICCID === send.ICCID && data.IMSI_USER === send.IMSI_USER && 
+        data.TARIFA == send.TARIFA){
+        console.log('NASA hackeada')
+        setAut(true)
+        }
     },
     validate: (values) => {
       const errors = {};
@@ -143,6 +171,7 @@ const AutenticacionNormal = () => {
       <button type="submit" className="btn btn-primary">
         Enviar
       </button>
+      {aut && <h2>Usuario Autenticado correctamente</h2>}
     </form>
   );
 };

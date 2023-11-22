@@ -171,7 +171,8 @@ const AutenticacionNormal = () => {
       <button type="submit" className="btn btn-primary">
         Enviar
       </button>
-      {aut && <h2>Usuario Autenticado correctamente</h2>}
+      {aut?<h2>Usuario Autenticado correctamente</h2>:
+      <h2>Autenticacción Fallida</h2>}
     </form>
   );
 };

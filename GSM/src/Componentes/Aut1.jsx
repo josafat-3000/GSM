@@ -54,7 +54,7 @@ const AutenticacionNormal = (hand_Of) => {
         window.location.reload();}
         else{
           alert('Datos erroneos autenticacion fallida');
-          windows.location.reload();
+          window.location.reload();
         }
         }
           
@@ -191,11 +191,7 @@ const AutenticacionNormal = (hand_Of) => {
       </form>
       
       <div style={{width: '100%'}}>
-      {aut?(
-      <TableComponent data={handOf}/>
-      ):
-        handleError()
-      }
+      {aut&& <><h2>Dispisitivo encontrado en la base de datos HLR</h2><TableComponent data={handOf}/></>}
       </div>
       </>
     

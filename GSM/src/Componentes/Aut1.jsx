@@ -7,7 +7,7 @@ const AutenticacionNormal = (hand_Of) => {
     const [id, setId] = useState('');
     const [data, setData] = useState(null);
     const [send, setSend] = useState(null)
-    const [aut, setAut] = useState("");
+    const [aut, setAut] = useState(false);
     const [autTar, setAutTar] = useState(false);
     const [handOf, setHandOf] = useState(null);
     const fetchData = async (id) => {
@@ -37,7 +37,6 @@ const AutenticacionNormal = (hand_Of) => {
       setSend(values)
       fetchData(id);
       setHandOf({...values,...hand_Of,})
-      console.log(handOf)
       
       
       if(data.REG_Y_ZONA === send.REG_Y_ZONA && data.EQUIPO === send.EQUIPO && 
@@ -53,6 +52,10 @@ const AutenticacionNormal = (hand_Of) => {
           setAutTar(false)
         alert('Sin saldo suficiente');
         window.location.reload();}
+        else{
+          alert('Datos erroneos autenticacion fallida');
+          windows.location.reload();
+        }
         }
           
     },
@@ -81,6 +84,7 @@ const AutenticacionNormal = (hand_Of) => {
       return errors;
     },
   });
+
 
   return (
     <>
@@ -190,7 +194,7 @@ const AutenticacionNormal = (hand_Of) => {
       {aut?(
       <TableComponent data={handOf}/>
       ):
-        <h2>Autenticacción Fallida</h2>
+        handleError()
       }
       </div>
       </>
